@@ -130,8 +130,8 @@ th, td {
     <option value="custom">Custom</option>
   </select>
   <input type="number" id="volumeCustom" placeholder="Custom volume (L)" min="0" step="0.01" style="display:none;" aria-hidden="true">
-  <input type="range" id="rating" step="0.1" min="0" max="10" value="0" aria-label="Rating" required>
-  <output id="ratingValue" for="rating">0.0</output>
+  <input type="range" id="rating" step="0.1" min="0" max="10" value="0" aria-label="Rating" aria-describedby="ratingValue" aria-valuenow="0.0" required>
+  <output id="ratingValue" for="rating" aria-label="Current rating value">0.0</output>
 
   <!-- Buttons -->
   <div style="margin-top: 10px;">
@@ -489,7 +489,9 @@ function updateCustomVolumeVisibility(isCustom) {
 }
 
 function updateRatingValue() {
-  ratingValueOutput.textContent = Number.parseFloat(ratingInput.value).toFixed(1);
+  const currentValue = Number.parseFloat(ratingInput.value).toFixed(1);
+  ratingValueOutput.textContent = currentValue;
+  ratingInput.setAttribute("aria-valuenow", currentValue);
 }
 
 volumeChoiceInput.addEventListener("change", () => {

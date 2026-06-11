@@ -130,7 +130,9 @@ th, td {
     <option value="custom">Custom</option>
   </select>
   <input type="number" id="volumeCustom" placeholder="Custom volume (L)" min="0" step="0.01" style="display:none;" aria-hidden="true">
-  <input type="number" id="rating" placeholder="Rating (0–10)" step="0.1" min="0" max="10" required>
+  <label id="rating-label" for="rating">Rating:</label>
+  <input type="range" id="rating" step="0.1" min="0" max="10" value="0" required>
+  <output id="ratingValue" for="rating" aria-live="polite">0.0</output>
 
   <!-- Buttons -->
   <div style="margin-top: 10px;">
@@ -349,6 +351,8 @@ const beerInput = document.getElementById("beer");
 const beerOptions = document.getElementById("beerOptions");
 const volumeChoiceInput = document.getElementById("volumeChoice");
 const volumeCustomInput = document.getElementById("volumeCustom");
+const ratingInput = document.getElementById("rating");
+const ratingValueOutput = document.getElementById("ratingValue");
 
 // ---------- app state ----------
 let data = [];
@@ -485,10 +489,17 @@ function updateCustomVolumeVisibility(isCustom) {
   volumeCustomInput.value = "";
 }
 
+function updateRatingValue() {
+  const currentValue = parseFloat(ratingInput.value).toFixed(1);
+  ratingValueOutput.textContent = currentValue;
+}
+
 volumeChoiceInput.addEventListener("change", () => {
   const isCustom = volumeChoiceInput.value === "custom";
   updateCustomVolumeVisibility(isCustom);
 });
+ratingInput.addEventListener("input", updateRatingValue);
+updateRatingValue();
 
 // ---------- render ----------
 function render() {
@@ -518,7 +529,7 @@ form.onsubmit = async (e) => {
   const drinker = document.getElementById("drinker").value.trim();
   const beerName = beerInput.value.trim();
   const volume = getSelectedVolume();
-  const rating = parseFloat(document.getElementById("rating").value);
+  const rating = parseFloat(ratingInput.value);
 
   if (!drinker) return alert("Drinker is required.");
   if (!beerName) return alert("Beer name is required.");
@@ -564,7 +575,8 @@ form.onsubmit = async (e) => {
   // Reset only volume/rating; keep drinker for convenience if you want
   volumeChoiceInput.value = "0.33";
   updateCustomVolumeVisibility(false);
-  document.getElementById("rating").value = "";
+  ratingInput.value = "0";
+  updateRatingValue();
   beerInput.value = "";
   beerInput.focus();
 };

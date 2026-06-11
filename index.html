@@ -124,7 +124,12 @@ th, td {
     <datalist id="beerOptions"></datalist>
   </div>
 
-  <input type="number" id="volume" placeholder="Volume (ml)" min="0" required>
+  <select id="volumeChoice" required>
+    <option value="0.33" selected>0.33 L</option>
+    <option value="0.5">0.5 L</option>
+    <option value="custom">Custom</option>
+  </select>
+  <input type="number" id="volumeCustom" placeholder="Custom volume (L)" min="0" step="0.01" style="display:none;" aria-hidden="true">
   <input type="number" id="rating" placeholder="Rating (0–10)" step="0.1" min="0" max="10" required>
 
   <!-- Buttons -->
@@ -342,6 +347,8 @@ const tableBody = document.querySelector("#log tbody");
 
 const beerInput = document.getElementById("beer");
 const beerOptions = document.getElementById("beerOptions");
+const volumeChoiceInput = document.getElementById("volumeChoice");
+const volumeCustomInput = document.getElementById("volumeCustom");
 
 // ---------- app state ----------
 let data = [];
@@ -458,6 +465,31 @@ function addBeerOptionIfMissing(name) {
   }
 }
 
+function getSelectedVolume() {
+  if (volumeChoiceInput.value === "custom") {
+    const customValue = volumeCustomInput.value.trim();
+    if (!customValue) return Number.NaN;
+    return parseFloat(customValue);
+  }
+  return parseFloat(volumeChoiceInput.value);
+}
+
+function updateCustomVolumeVisibility(isCustom) {
+  volumeCustomInput.style.display = isCustom ? "" : "none";
+  volumeCustomInput.required = isCustom;
+  if (isCustom) {
+    volumeCustomInput.removeAttribute("aria-hidden");
+    return;
+  }
+  volumeCustomInput.setAttribute("aria-hidden", "true");
+  volumeCustomInput.value = "";
+}
+
+volumeChoiceInput.addEventListener("change", () => {
+  const isCustom = volumeChoiceInput.value === "custom";
+  updateCustomVolumeVisibility(isCustom);
+});
+
 // ---------- render ----------
 function render() {
   tableBody.innerHTML = "";
@@ -485,7 +517,7 @@ form.onsubmit = async (e) => {
 
   const drinker = document.getElementById("drinker").value.trim();
   const beerName = beerInput.value.trim();
-  const volume = parseFloat(document.getElementById("volume").value);
+  const volume = getSelectedVolume();
   const rating = parseFloat(document.getElementById("rating").value);
 
   if (!drinker) return alert("Drinker is required.");
@@ -530,7 +562,8 @@ form.onsubmit = async (e) => {
   render();
 
   // Reset only volume/rating; keep drinker for convenience if you want
-  document.getElementById("volume").value = "";
+  volumeChoiceInput.value = "0.33";
+  updateCustomVolumeVisibility(false);
   document.getElementById("rating").value = "";
   beerInput.value = "";
   beerInput.focus();

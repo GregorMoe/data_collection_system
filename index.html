@@ -130,7 +130,7 @@ th, td {
     <option value="custom">Custom</option>
   </select>
   <input type="number" id="volumeCustom" placeholder="Custom volume (L)" min="0" step="0.01" style="display:none;" aria-hidden="true">
-  <input type="range" id="rating" step="0.1" min="0" max="10" value="0" aria-label="Rating" aria-describedby="ratingValue" required>
+  <input type="range" id="rating" step="0.1" min="0" max="10" value="0" aria-label="Rating" aria-describedby="ratingValue">
   <output id="ratingValue" for="rating" aria-label="Current rating value">0.0</output>
 
   <!-- Buttons -->
@@ -489,7 +489,7 @@ function updateCustomVolumeVisibility(isCustom) {
 }
 
 function updateRatingValue() {
-  const currentValue = Number.parseFloat(ratingInput.value).toFixed(1);
+  const currentValue = parseFloat(ratingInput.value).toFixed(1);
   ratingValueOutput.textContent = currentValue;
 }
 
